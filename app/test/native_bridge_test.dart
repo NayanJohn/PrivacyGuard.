@@ -44,6 +44,48 @@ void main() {
           return <String, dynamic>{'ok': true};
         case 'syncBlocks':
           return <String, dynamic>{'applied': 0, 'failed': <String>[]};
+        case 'triggerAudit':
+          return <String, dynamic>{
+            'eventsAdded': 3,
+            'packagesAudited': 2,
+            'timestamp': 1700000000000,
+            'message': 'Audit completed',
+          };
+        case 'getAuditStatus':
+          return <String, dynamic>{
+            'isPeriodicScheduled': true,
+            'lastAuditCompletedMs': 1700000000000,
+            'totalEventsCount': 10,
+            'totalSessionsCount': 5,
+            'totalScoresCount': 2,
+          };
+        case 'schedulePeriodicAudit':
+          return true;
+        case 'cancelPeriodicAudit':
+          return true;
+        case 'getAuditHistory':
+          return <Map<String, dynamic>>[
+            <String, dynamic>{
+              'id': 1,
+              'packageName': 'com.android.chrome',
+              'computedAtMs': 1700000000000,
+              'runtimeRisk': 0,
+              'rawPenalty': 0,
+              'breakdownJson': '[]',
+            }
+          ];
+        case 'getTimelineEvents':
+          return <Map<String, dynamic>>[
+            <String, dynamic>{
+              'id': 1,
+              'packageName': 'com.android.chrome',
+              'op': 'OP_CAMERA',
+              'accessTimeMs': 1700000000000,
+              'durationMs': 1000,
+              'rejectTimeMs': 0,
+              'state': 'FOREGROUND',
+            }
+          ];
         default:
           throw PlatformException(
             code: 'NOT_IMPLEMENTED',
@@ -52,6 +94,7 @@ void main() {
       }
     });
   });
+
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -76,6 +119,12 @@ void main() {
     expect(suspended, false);
     await NativeBridge.releaseControl(confirmation: 'CONFIRM');
     await NativeBridge.syncBlocks();
+    await NativeBridge.triggerAudit(packages: ['com.example.test']);
+    await NativeBridge.getAuditStatus();
+    await NativeBridge.schedulePeriodicAudit(intervalMinutes: 15);
+    await NativeBridge.cancelPeriodicAudit();
+    await NativeBridge.getAuditHistory('com.example.test');
+    await NativeBridge.getTimelineEvents(pkg: 'com.example.test');
 
     expect(log.map((m) => m.method).toList(), [
       'getAccessStatus',
@@ -90,6 +139,13 @@ void main() {
       'isSuspended',
       'releaseControl',
       'syncBlocks',
+      'triggerAudit',
+      'getAuditStatus',
+      'schedulePeriodicAudit',
+      'cancelPeriodicAudit',
+      'getAuditHistory',
+      'getTimelineEvents',
     ]);
   });
 }
+

@@ -9,6 +9,6 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        nativeBridgeHandler = NativeBridgeHandler(flutterEngine.dartExecutor.binaryMessenger)
+        nativeBridgeHandler = NativeBridgeHandler(this, flutterEngine.dartExecutor.binaryMessenger)
     }
 }

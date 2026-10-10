@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     ]
 
     # Database
-    DATABASE_URL: str = "sqlite:///./privacyguard.db"
+    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/privacyguard"
 
     model_config = SettingsConfigDict(
         env_file=".env",
